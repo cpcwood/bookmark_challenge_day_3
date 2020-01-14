@@ -3,20 +3,20 @@ require 'sinatra/base'
 require_relative './lib/bookmarks'
 
 class BookmarkManager < Sinatra::Base
+
+  # Routes
+  # --------------------
+
   get '/' do
     'Bookmark Manager'
   end
 
   get '/bookmarks' do
-    con = PG.connect(:dbname => 'bookmark_manager', :user => ENV['USER'])
-
-    Bookmark.add_connection(con)
-
     @bookmarks = Bookmark.all
     erb :'bookmarks/index'
   end
 
+  #--------------------
 
-
-  run! if app_file == $0
+  run! if __FILE__ == $0
 end
