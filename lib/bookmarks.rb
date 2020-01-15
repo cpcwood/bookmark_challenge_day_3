@@ -17,10 +17,10 @@ class Bookmark
     list
   end
 
-  def self.add(id, url)
+  def self.add(url)
     con = self.connect
     begin
-      con.exec("INSERT INTO bookmarks VALUES('#{id}', '#{url}')")
+      con.exec("INSERT INTO bookmarks (url) VALUES('#{url}')")
     rescue => e
       puts e.message
     ensure
