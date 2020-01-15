@@ -2,12 +2,26 @@ require 'pg'
 
 class Bookmark
 
+  # Instance
+  # --------------------
+
+  attr_reader :title, :url
+
+  def initialize(database_object)
+    @title = database_object['title']
+    @url = database_object['url']
+  end
+
+
+  # Class
+  # --------------------
+
   def self.all
     con = self.connect
     begin
       rs = con.exec "SELECT * FROM bookmarks"
       list = []
-      rs.each {|row| list << row['url']}
+      rs.each {|row| list << self.new(row)}
     rescue => e
       puts e.message
     ensure
@@ -17,10 +31,10 @@ class Bookmark
     list
   end
 
-  def self.add(url)
+  def self.add(url, title)
     con = self.connect
     begin
-      con.exec("INSERT INTO bookmarks (url) VALUES('#{url}')")
+      con.exec("INSERT INTO bookmarks (url, title) VALUES('#{url}', '#{title}')")
     rescue => e
       puts e.message
     ensure
@@ -43,5 +57,7 @@ class Bookmark
     database = (ENV['ENVIRONMENT'] == 'test' ? 'bookmark_manager_test' : 'bookmark_manager')
     PG.connect(:dbname => database, :user => ENV['USER'])
   end
+
+
 
 end

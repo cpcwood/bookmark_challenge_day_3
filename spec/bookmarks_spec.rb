@@ -3,7 +3,7 @@ require 'bookmarks'
 describe Bookmark do
   describe '.all' do
     it 'returns all bookmarks' do
-      expect(Bookmark.all).to eq(["http://www.google.com", "http://www.youtube.com"])
+      expect(Bookmark.all).to include(a_kind_of(Bookmark))
     end
     # it 'rescues error' do
     #   allow(con).to receive(:exec).and_raise('Error')

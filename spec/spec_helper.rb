@@ -16,8 +16,8 @@ Capybara.app = BookmarkManager
 RSpec.configure do |config|
 
   config.before(:each) do
-    Bookmark.add('http://www.google.com')
-    Bookmark.add('http://www.youtube.com')
+    Bookmark.add('http://www.google.com', 'Google')
+    Bookmark.add('http://www.youtube.com', 'Youtube')
   end
 
   config.after(:each) do
