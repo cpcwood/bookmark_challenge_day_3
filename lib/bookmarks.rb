@@ -43,6 +43,7 @@ class Bookmark
     else
       # Update data
       begin
+        con = self.connect
         con.exec("INSERT INTO bookmarks (url, title) VALUES('#{url}', '#{title}')")
       rescue => e
         puts e.message
@@ -58,7 +59,7 @@ class Bookmark
     # Check Data
     url = url.strip
     url, message = self.retrive_item(id).url, 'URL_Invalid!' unless self.valid_url?(url)
-    title = self.retrive_item(id).title if title.empty?
+    title, message = self.retrive_item(id).title, 'Bookmark_Updated!_Title_left_empty' if title.empty?
 
     # Update data
     con = self.connect
