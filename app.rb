@@ -16,23 +16,26 @@ class BookmarkManager < Sinatra::Base
   end
 
   get '/bookmarks' do
+    p params
+    p params[:message]
+    @message = params[:message].gsub('_', ' ') if params[:message]
     @bookmarks = Bookmark.all
     erb :list_bookmarks
   end
 
   post '/bookmarks' do
-    Bookmark.add(params[:url], params[:title])
-    redirect('/bookmarks')
+    message = Bookmark.add(params[:url], params[:title])
+    redirect("/bookmarks?message=#{message}")
   end
 
   delete '/bookmarks/:id' do
-    Bookmark.delete(params[:id])
-    redirect('/bookmarks')
+    message = Bookmark.delete(params[:id])
+    redirect("/bookmarks?message=#{message}")
   end
 
   put '/bookmarks/:id' do
-    Bookmark.update(params[:id], params[:url], params[:title])
-    redirect('/bookmarks')
+    message = Bookmark.update(params[:id], params[:url], params[:title])
+    redirect("/bookmarks?message=#{message}")
   end
 
   #--------------------

@@ -33,17 +33,34 @@ class Bookmark
   end
 
   def self.add(url, title)
-    con = self.connect
-    begin
-      con.exec("INSERT INTO bookmarks (url, title) VALUES('#{url}', '#{title}')")
-    rescue => e
-      puts e.message
-    ensure
-      con.close if con
+    message = 'Bookmark_added!'
+    # Check Data
+    url = url.strip
+    if self.valid_url?(url)
+      message = self.retrive_item(id).url, 'URL_Invalid!'
+    elsif title.empty?
+      message = 'Title_Empty!'
+    else
+      # Update data
+      begin
+        con.exec("INSERT INTO bookmarks (url, title) VALUES('#{url}', '#{title}')")
+      rescue => e
+        puts e.message
+      ensure
+        con.close if con
+      end
     end
+    message
   end
 
   def self.update(id, url, title)
+    message = 'Bookmark_Updated!'
+    # Check Data
+    url = url.strip
+    url, message = self.retrive_item(id).url, 'URL_Invalid!' unless self.valid_url?(url)
+    title = self.retrive_item(id).title if title.empty?
+
+    # Update data
     con = self.connect
     begin
       con.exec("UPDATE bookmarks SET url = '#{url}', title = '#{title}' WHERE id = #{id}")
@@ -52,6 +69,7 @@ class Bookmark
     ensure
       con.close if con
     end
+    message
   end
 
   def self.delete(id)
@@ -63,6 +81,7 @@ class Bookmark
     ensure
       con.close if con
     end
+    'Bookmark_Deleted!'
   end
 
   def self.custom_command(command)
@@ -85,5 +104,17 @@ class Bookmark
 
   def self.valid_url?(url)
     url.match?(/\Ahttp{1}[s]?:\/\/w{3}\.[\w-]+\.[\w]{2,}\z/)
+  end
+
+  def self.retrive_item(id)
+    con = self.connect
+    begin
+      item = con.exec "SELECT * FROM bookmarks WHERE id = #{id}"
+    rescue => e
+      puts e.message
+    ensure
+      con.close if con
+    end
+    self.new(item[0])
   end
 end
