@@ -2,6 +2,11 @@ require 'sinatra/base'
 require_relative './lib/bookmarks'
 
 class BookmarkManager < Sinatra::Base
+  # Environment
+  # --------------------
+
+  # Allow html forms to provide put requests
+  use Rack::MethodOverride
 
   # Routes
   # --------------------
@@ -17,6 +22,16 @@ class BookmarkManager < Sinatra::Base
 
   post '/bookmarks' do
     Bookmark.add(params[:url], params[:title])
+    redirect('/bookmarks')
+  end
+
+  delete '/bookmarks/:id' do
+    Bookmark.delete(params[:id])
+    redirect('/bookmarks')
+  end
+
+  put '/bookmarks/:id' do
+    Bookmark.update(params[:id], params[:url], params[:title])
     redirect('/bookmarks')
   end
 

@@ -5,11 +5,12 @@ class Bookmark
   # Instance
   # --------------------
 
-  attr_reader :title, :url
+  attr_reader :title, :url, :id
 
   def initialize(database_object)
     @title = database_object['title']
     @url = database_object['url']
+    @id = database_object['id']
   end
 
 
@@ -28,13 +29,35 @@ class Bookmark
       rs.clear if rs
       con.close if con
     end
-    list
+    list.sort_by{|bookmark| bookmark.id}
   end
 
   def self.add(url, title)
     con = self.connect
     begin
       con.exec("INSERT INTO bookmarks (url, title) VALUES('#{url}', '#{title}')")
+    rescue => e
+      puts e.message
+    ensure
+      con.close if con
+    end
+  end
+
+  def self.update(id, url, title)
+    con = self.connect
+    begin
+      con.exec("UPDATE bookmarks SET url = '#{url}', title = '#{title}' WHERE id = #{id}")
+    rescue => e
+      puts e.message
+    ensure
+      con.close if con
+    end
+  end
+
+  def self.delete(id)
+    con = self.connect
+    begin
+      con.exec("DELETE FROM bookmarks WHERE id = #{id}")
     rescue => e
       puts e.message
     ensure
@@ -58,6 +81,9 @@ class Bookmark
     PG.connect(:dbname => database, :user => ENV['USER'])
   end
 
+  private
 
-
+  def self.valid_url?(url)
+    url.match?(/\Ahttp{1}[s]?:\/\/w{3}\.[\w-]+\.[\w]{2,}\z/)
+  end
 end
